@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Handoff — The Clue Foundation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --bg-card: #161616;
+      --gold: #c9a84c;
+      --gold-light: #e2c47a;
+      --white: #f4f1eb;
+      --muted: #a8a8a8;
+      --border: rgba(201,168,76,0.25);
+      --border-subtle: rgba(255,255,255,0.08);
+      --green: #1a3a2a;
+      --radius: 10px;
+      --font-serif: 'Georgia', serif;
+      --font-sans: system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.65;
+      padding: 48px 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page { max-width: 800px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 32px;
+      margin-bottom: 48px;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .logo-ball { font-size: 1.6rem; color: var(--gold); }
+    .brand { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; }
+    .badge {
+      background: var(--gold);
+      color: #000;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .header h1 {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--gold);
+    }
+    .header p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Sections */
+    .section { margin-bottom: 48px; }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title .icon { font-size: 1.1rem; }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card.highlight { border-color: var(--border); }
+
+    /* Status list */
+    .status-list { display: flex; flex-direction: column; gap: 12px; }
+    .status-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .done   { background: #4caf50; }
+    .todo   { background: var(--gold); }
+    .later  { background: #555; }
+    .status-text strong { display: block; font-size: 0.95rem; margin-bottom: 2px; }
+    .status-text span   { font-size: 0.83rem; color: var(--muted); }
+
+    /* File tree */
+    .file-tree {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 24px;
+      line-height: 2;
+    }
+    .file-tree .folder { color: var(--gold); font-weight: 700; }
+    .file-tree .file   { color: var(--white); }
+    .file-tree .note   { color: var(--muted); font-size: 0.78rem; margin-left: 8px; }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: 12px; }
+    .step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+    }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body strong { display: block; margin-bottom: 4px; font-size: 0.95rem; }
+    .step-body span   { font-size: 0.85rem; color: var(--muted); }
+
+    /* Sections built */
+    .sections-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .section-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+    }
+    .section-chip .chip-icon { font-size: 1.2rem; margin-bottom: 6px; }
+    .section-chip strong { display: block; margin-bottom: 2px; }
+    .section-chip span { font-size: 0.78rem; color: var(--muted); }
+
+    /* Info box */
+    .info-box {
+      background: rgba(201,168,76,0.06);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .info-box strong { color: var(--gold); display: block; margin-bottom: 6px; }
+
+    code {
+      background: rgba(255,255,255,0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-family: 'Courier New', monospace;
+      color: var(--gold-light);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <span class="logo-ball">&#9679;</span>
+      <span class="brand">The Clue Foundation</span>
+      <span class="badge">Handoff Doc</span>
+    </div>
+    <h1>Project Handoff</h1>
+    <p>Everything you need to know about your website &mdash; what&rsquo;s built, what&rsquo;s left, and how to make changes.</p>
+  </div>
+
+  <!-- What was built -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128196;</span> What Was Built</div>
+    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:20px;">A complete, dark &amp; premium single-page website for your 8-ball pool digital course.</p>
+    <div class="sections-grid">
+      <div class="section-chip">
+        <div class="chip-icon">&#127919;</div>
+        <strong>Hero Section</strong>
+        <span>Headline, stats, and call-to-action buttons</span>
+      </div>
+      <div class="section-chip">
+        <div class="chip-icon">&#127979;</div>
+        <strong>Course Curriculum</strong>
+        <span>6 modules with descriptions and bullet points</span>
+      </div>
+      <div class="section-chip">
+        <div class="chip-icon">&#128100;</div>
+        <strong>Instructor Bio</strong>
+        <span>Photo placeholder, credentials, and quote</span>
+      </div>
+      <div class="section-chip">
+        <div class="chip-icon">&#11088;</div>
+        <strong>Testimonials</strong>
+        <span>6 student reviews with a featured card</span>
+      </div>
+      <div class="section-chip">
+        <div class="chip-icon">&#127996;</div>
+        <strong>Affiliate Gear Shop</strong>
+        <span>4 product cards ready for affiliate links</span>
+      </div>
+      <div class="section-chip">
+        <div class="chip-icon">&#128176;</div>
+        <strong>Pricing &amp; Enrollment</strong>
+        <span>3 tiers ($49 / $97 / $197) + guarantee</span>
+      </div>
+      <div class="section-chip">
+        <div class="chip-icon">&#128241;</div>
+        <strong>Fully Responsive</strong>
+        <span>Works on desktop, tablet, and mobile</span>
+      </div>
+      <div class="section-chip">
+        <div class="chip-icon">&#10024;</div>
+        <strong>Animations</strong>
+        <span>Scroll fade-ins and hover effects</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- File structure -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128193;</span> File Structure</div>
+    <div class="file-tree">
+      <div><span class="folder">8-ball-pool-course-/</span></div>
+      <div>&nbsp;&nbsp;&#9500;&#9472; <span class="file">index.html</span> <span class="note">&larr; the main website page</span></div>
+      <div>&nbsp;&nbsp;&#9500;&#9472; <span class="folder">css/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&#9492;&#9472; <span class="file">style.css</span> <span class="note">&larr; all colors, fonts, layout</span></div>
+      <div>&nbsp;&nbsp;&#9500;&#9472; <span class="folder">js/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&#9492;&#9472; <span class="file">main.js</span> <span class="note">&larr; scroll effects, mobile nav</span></div>
+      <div>&nbsp;&nbsp;&#9492;&#9472; <span class="file">handoff.html</span> <span class="note">&larr; this document</span></div>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#9989;</span> What&rsquo;s Done vs. What&rsquo;s Left</div>
+    <div class="status-list">
+      <div class="status-item">
+        <div class="status-dot done"></div>
+        <div class="status-text">
+          <strong>Full website built and pushed to GitHub</strong>
+          <span>All sections, styling, and mobile responsiveness are complete.</span>
+        </div>
+      </div>
+      <div class="status-item">
+        <div class="status-dot done"></div>
+        <div class="status-text">
+          <strong>Site hosted on GitHub Pages</strong>
+          <span>Enable GitHub Pages in repo Settings &rarr; Pages to get your live URL.</span>
+        </div>
+      </div>
+      <div class="status-item">
+        <div class="status-dot todo"></div>
+        <div class="status-text">
+          <strong>Connect enroll buttons to your payment page</strong>
+          <span>The 3 pricing buttons (Starter, Pro, Elite) currently link to &ldquo;#&rdquo;. Replace with your Gumroad, Stripe, or Teachable link.</span>
+        </div>
+      </div>
+      <div class="status-item">
+        <div class="status-dot todo"></div>
+        <div class="status-text">
+          <strong>Add Amazon affiliate links to gear cards</strong>
+          <span>4 products in the gear section need real affiliate URLs. Sign up for Amazon Associates (free) to generate them.</span>
+        </div>
+      </div>
+      <div class="status-item">
+        <div class="status-dot later"></div>
+        <div class="status-text">
+          <strong>Add your real photo</strong>
+          <span>The instructor section has a placeholder. Swap it out whenever you have a photo ready.</span>
+        </div>
+      </div>
+      <div class="status-item">
+        <div class="status-dot later"></div>
+        <div class="status-text">
+          <strong>Record course videos</strong>
+          <span>The 6 modules are outlined on the site. Film and upload to your course platform.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to go live -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#127760;</span> How to Make the Site Live</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <strong>Go to the repo on GitHub</strong>
+          <span>github.com &rarr; log in &rarr; open <code>8-ball-pool-course-</code></span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <strong>Open Settings &rarr; Pages</strong>
+          <span>Click the Settings tab at the top, then Pages in the left sidebar.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <strong>Select the branch</strong>
+          <span>Under Branch, choose <code>claude/ball-pool-website-0QKtT</code> and keep the folder as <code>/ (root)</code>.</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <strong>Click Save &mdash; wait 1&ndash;2 minutes</strong>
+          <span>GitHub will show a green banner with your live URL, something like <code>https://curtisbellot20-ai.github.io/8-ball-pool-course-/</code></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to request changes -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#9999;&#65039;</span> How to Request Changes</div>
+    <div class="card highlight">
+      <p style="margin-bottom:12px; font-size:0.95rem;">All content, colors, prices, text, and links can be updated quickly. To request a change:</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Go back to the Claude Code session</strong>
+            <span>Your brother (Curtis) has access and can make changes on your behalf.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Say exactly what you want changed</strong>
+            <span>Examples: &ldquo;Change the Pro price to $127&rdquo; or &ldquo;Update my bio to say&hellip;&rdquo; or &ldquo;Add my Amazon link to the cue card.&rdquo;</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Changes go live automatically</strong>
+            <span>Once updated and pushed, GitHub Pages will reflect the changes within a minute or two.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#128274;</span> Important Notes</div>
+    <div class="info-box">
+      <strong>Affiliate Disclosure</strong>
+      The site already includes a legal affiliate disclosure in the gear section footer and in the website footer. You&rsquo;re covered once you add your real links.
+    </div>
+    <div class="info-box" style="margin-top:12px;">
+      <strong>30-Day Guarantee</strong>
+      The pricing section shows a 30-day money-back guarantee. Make sure your payment platform (Gumroad, etc.) is set up to honor refunds before you go live.
+    </div>
+    <div class="info-box" style="margin-top:12px;">
+      <strong>Course Platform Recommendation</strong>
+      Gumroad is the fastest to set up (free, takes 10 minutes). Teachable or Kajabi offer more features if you want a full learning management system.
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Built for The Clue Foundation &mdash; 8-Ball Pool Digital Course</p>
+    <p style="margin-top:4px;">Prepared May 2026</p>
+  </div>
+
+</div>
+</body>
+</html>
